@@ -119,7 +119,7 @@ export default function RandomWordDisplay() {
             exit={{ opacity: 0 }}
             className="text-center"
           >
-            <h2 className="text-9xl font-bold mb-4">{currentWord}</h2>
+            <h2 className="text-6xl font-bold mb-4">{currentWord}</h2>
             <Button onClick={handleClick} className="bg-sky-500 hover:bg-sky-500 text-lg">
               Next
             </Button>
