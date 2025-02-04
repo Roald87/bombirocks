@@ -11,6 +11,8 @@ export default function RandomWordDisplay() {
   const [currentImage, setCurrentImage] = useState<string | null>(null)
   const [imageSequence, setImageSequence] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [countdown, setCountdown] = useState<number | null>(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -45,14 +47,18 @@ export default function RandomWordDisplay() {
     setImageSequence(images)
     let index = 0
     
+    // Set countdown together with first image
     const timer = setInterval(() => {
       if (index < images.length) {
         setCurrentImage(images[index])
+        setCountdown(3 - index)
         index++
       } else {
         clearInterval(timer)
         setCurrentImage(null)
+        setCountdown(null)
         setCurrentWord(getRandomWord())
+        setIsTransitioning(false)
       }
     }, 1000)
   }
@@ -60,7 +66,10 @@ export default function RandomWordDisplay() {
   const handleClick = () => {
     setCurrentWord("")
     setCurrentImage(null)
-    startImageSequence()
+    setCountdown(null)  // Reset countdown before starting sequence
+    setIsTransitioning(true)
+    // Use setTimeout to prevent the first "3" from showing
+    setTimeout(startImageSequence, 0)
   }
 
   if (isLoading) {
@@ -70,25 +79,38 @@ export default function RandomWordDisplay() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <AnimatePresence mode="wait">
-        {!currentImage && !currentWord && (
+        {!currentImage && !currentWord && !isTransitioning && (
           <motion.div key="button" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <Button onClick={handleClick} className="bg-sky-500 hover:bg-sky-500 text-lg">
               Play
             </Button>
           </motion.div>
         )}
-        {currentImage && (
-          <motion.div
-            key={currentImage}
-            initial={{ opacity: 0, scale: 0.75 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.75 }}
-            transition={{ duration: 0.25 }}
-            className="w-64 h-64"
-          >
-            <img src={currentImage} alt="Random" className="w-full h-full object-cover rounded-lg" />
-          </motion.div>
-        )}
+        <div className="flex flex-col items-center gap-8">
+          {currentImage && (
+            <motion.div
+              key={currentImage}
+              initial={{ opacity: 0, scale: 0.75 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.75 }}
+              transition={{ duration: 0.25 }}
+              className="w-64 h-64"
+            >
+              <img src={currentImage} alt="Random" className="w-full h-full object-cover rounded-lg" />
+            </motion.div>
+          )}
+          {countdown && (
+            <motion.div
+              key={`countdown-${countdown}`}
+              initial={{ opacity: 0, scale: 0.75 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.75 }}
+              transition={{ duration: 0.25 }}
+            >
+              <h2 className="text-9xl font-bold">{countdown}</h2>
+            </motion.div>
+          )}
+        </div>
         {currentWord && (
           <motion.div
             key="word"
@@ -97,7 +119,7 @@ export default function RandomWordDisplay() {
             exit={{ opacity: 0 }}
             className="text-center"
           >
-            <h2 className="text-6xl font-bold mb-4">{currentWord}</h2>
+            <h2 className="text-9xl font-bold mb-4">{currentWord}</h2>
             <Button onClick={handleClick} className="bg-sky-500 hover:bg-sky-500 text-lg">
               Next
             </Button>
@@ -107,4 +129,7 @@ export default function RandomWordDisplay() {
     </div>
   )
 }
+
+
+
 
