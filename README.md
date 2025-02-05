@@ -8,7 +8,7 @@ A fun word game that challenges players to think of songs containing randomly ge
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Roald87/random-word-display.git
+git clone git@github.com:Roald87/bombirocks.git
 cd random-word-display
 ```
 
